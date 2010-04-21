@@ -9,7 +9,7 @@ use Test::More;
 
 plan skip_all => 'JSON::XS is required for this test'
   unless eval { require JSON::XS; 1 };
-plan tests => 70;
+plan tests => 82;
 
 use Mojo::ByteStream 'b';
 
@@ -44,9 +44,9 @@ $array = $json->decode('[10e12 , [2 ]]');
 #is_deeply($array, ['10e12', [2]], 'decode [10e12 , [2 ]]');
 #$array = $json->decode('[37.7668 , [ 20 ]] ');
 #is_deeply($array, [37.7668, [20]], 'decode [37.7668 , [ 20 ]] ');
-#$array = $json->decode('[1e3]');
-#isa_ok($array, 'ARRAY', 'decode [1e3]');
-#cmp_ok($array->[0], '==', 1e3, 'value is 1e3');
+$array = $json->decode('[1e3]');
+isa_ok($array, 'ARRAY', 'decode [1e3]');
+cmp_ok($array->[0], '==', 1e3, 'value is 1e3');
 
 # Decode name
 $array = $json->decode('[true]');
@@ -136,11 +136,11 @@ $string = $json->encode(["hello\nworld!"]);
 is($string, '["hello\nworld!"]', 'encode ["hello\nworld!"]');
 $string = $json->encode(["hello\t\"world!"]);
 is($string, '["hello\t\"world!"]', 'encode ["hello\t\"world!"]');
-#$string = $json->encode(["hello\x{0003}\x{0152}world\x{0152}!"]);
-#is( b($string)->decode('UTF-8'),
-#    "[\"hello\\u0003\x{0152}world\x{0152}!\"]",
-#    'encode ["hello\x{0003}\x{0152}world\x{0152}!"]'
-#);
+$string = $json->encode(["hello\x{0003}\x{0152}world\x{0152}!"]);
+is( b($string)->decode('UTF-8'),
+    "[\"hello\\u0003\x{0152}world\x{0152}!\"]",
+    'encode ["hello\x{0003}\x{0152}world\x{0152}!"]'
+);
 $string = $json->encode(["123abc"]);
 is($string, '["123abc"]', 'encode ["123abc"]');
 
@@ -182,24 +182,25 @@ is($string, '[37.7668,[20]]', 'encode [37.7668, [20]]');
 #$array = $json->decode($string);
 #is_deeply($array, ["\x{10346}"], 'successful roundtrip');
 
-## Decode UTF-16LE
-#$array = $json->decode(b("\x{feff}[true]")->encode('UTF-16LE'));
+# Decode UTF-16LE
+$array = $json->decode(b("\x{feff}[true]")->encode('UTF-16LE'));
 #is_deeply($array, [$json->true], 'decode \x{feff}[true]');
-#
-## Decode UTF-16LE with faihu surrogate pair
-#$array = $json->decode(b("\x{feff}[\"\\ud800\\udf46\"]")->encode('UTF-16LE'));
-#is_deeply($array, ["\x{10346}"], 'decode \x{feff}[\"\\ud800\\udf46\"]');
-#
-## Decode UTF-16LE with faihu surrogate pair and BOM value
-#$array = $json->decode(
-#    b("\x{feff}[\"\\ud800\\udf46\x{feff}\"]")->encode('UTF-16LE'));
-#is_deeply($array, ["\x{10346}\x{feff}"],
-#    'decode \x{feff}[\"\\ud800\\udf46\x{feff}\"]');
-#
+is($array->[0], $json->true);
+
+# Decode UTF-16LE with faihu surrogate pair
+$array = $json->decode(b("\x{feff}[\"\\ud800\\udf46\"]")->encode('UTF-16LE'));
+is_deeply($array, ["\x{10346}"], 'decode \x{feff}[\"\\ud800\\udf46\"]');
+
+# Decode UTF-16LE with faihu surrogate pair and BOM value
+$array = $json->decode(
+    b("\x{feff}[\"\\ud800\\udf46\x{feff}\"]")->encode('UTF-16LE'));
+is_deeply($array, ["\x{10346}\x{feff}"],
+    'decode \x{feff}[\"\\ud800\\udf46\x{feff}\"]');
+
 ## Decode UTF-16LE with missing high surrogate
 #$array = $json->decode(b("\x{feff}[\"\\ud800\"]")->encode('UTF-16LE'));
 #is_deeply($array, ['\ud800'], 'decode \x{feff}[\"\\ud800\"]');
-#
+
 ## Decode UTF-16LE with missing low surrogate
 #$array = $json->decode(b("\x{feff}[\"\\udf46\"]")->encode('UTF-16LE'));
 #is_deeply($array, ['\udf46'], 'decode \x{feff}[\"\\udf46\"]');
@@ -207,31 +208,33 @@ is($string, '[37.7668,[20]]', 'encode [37.7668, [20]]');
 ## Decode UTF-16BE with faihu surrogate pair
 #$array = $json->decode(b("\x{feff}[\"\\ud800\\udf46\"]")->encode('UTF-16BE'));
 #is_deeply($array, ["\x{10346}"], 'decode \x{feff}[\"\\ud800\\udf46\"]');
-#
-## Decode UTF-32LE
-#$array = $json->decode(b("\x{feff}[true]")->encode('UTF-32LE'));
+
+# Decode UTF-32LE
+$array = $json->decode(b("\x{feff}[true]")->encode('UTF-32LE'));
 #is_deeply($array, [$json->true], 'decode \x{feff}[true]');
-#
-## Decode UTF-32BE
-#$array = $json->decode(b("\x{feff}[true]")->encode('UTF-32BE'));
+is($array->[0], $json->true);
+
+# Decode UTF-32BE
+$array = $json->decode(b("\x{feff}[true]")->encode('UTF-32BE'));
 #is_deeply($array, [$json->true], 'decode \x{feff}[true]');
-#
-## Decode UTF-16LE without BOM
-#$array = $json->decode(b("[\"\\ud800\\udf46\"]")->encode('UTF-16LE'));
-#is_deeply($array, ["\x{10346}"], 'decode [\"\\ud800\\udf46\"]');
-#
-## Decode UTF-16BE without BOM
-#$array = $json->decode(b("[\"\\ud800\\udf46\"]")->encode('UTF-16BE'));
-#is_deeply($array, ["\x{10346}"], 'decode [\"\\ud800\\udf46\"]');
-#
-## Decode UTF-32LE without BOM
-#$array = $json->decode(b("[\"\\ud800\\udf46\"]")->encode('UTF-32LE'));
-#is_deeply($array, ["\x{10346}"], 'decode [\"\\ud800\\udf46\"]');
-#
-## Decode UTF-32BE without BOM
-#$array = $json->decode(b("[\"\\ud800\\udf46\"]")->encode('UTF-32BE'));
-#is_deeply($array, ["\x{10346}"], 'decode [\"\\ud800\\udf46\"]');
-#
+is($array->[0], $json->true);
+
+# Decode UTF-16LE without BOM
+$array = $json->decode(b("[\"\\ud800\\udf46\"]")->encode('UTF-16LE'));
+is_deeply($array, ["\x{10346}"], 'decode [\"\\ud800\\udf46\"]');
+
+# Decode UTF-16BE without BOM
+$array = $json->decode(b("[\"\\ud800\\udf46\"]")->encode('UTF-16BE'));
+is_deeply($array, ["\x{10346}"], 'decode [\"\\ud800\\udf46\"]');
+
+# Decode UTF-32LE without BOM
+$array = $json->decode(b("[\"\\ud800\\udf46\"]")->encode('UTF-32LE'));
+is_deeply($array, ["\x{10346}"], 'decode [\"\\ud800\\udf46\"]');
+
+# Decode UTF-32BE without BOM
+$array = $json->decode(b("[\"\\ud800\\udf46\"]")->encode('UTF-32BE'));
+is_deeply($array, ["\x{10346}"], 'decode [\"\\ud800\\udf46\"]');
+
 # Complicated roudtrips
 $string = '[null,false,true,"",0,1]';
 $array  = $json->decode($string);

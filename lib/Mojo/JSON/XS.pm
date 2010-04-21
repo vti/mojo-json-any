@@ -6,10 +6,34 @@ use warnings;
 use base 'Mojo::Base';
 
 use JSON::XS;
+use Mojo::ByteStream 'b';
 
 # Literal names
 our $FALSE = Mojo::JSON::XS::_Bool->new(0);
 our $TRUE  = Mojo::JSON::XS::_Bool->new(1);
+
+# Byte order marks
+my $BOM_RE = qr/
+    (?:
+    \357\273\277   # UTF-8
+    |
+    \377\376\0\0   # UTF-32LE
+    |
+    \0\0\376\377   # UTF-32BE
+    |
+    \376\377       # UTF-16BE
+    |
+    \377\376       # UTF-16LE
+    )
+/x;
+
+# Unicode encoding detection
+my $UTF_PATTERNS = {
+    "\0\0\0[^\0]"    => 'UTF-32BE',
+    "\0[^\0]\0[^\0]" => 'UTF-16BE',
+    "[^\0]\0\0\0"    => 'UTF-32LE',
+    "[^\0]\0[^\0]\0" => 'UTF-16LE'
+};
 
 __PACKAGE__->attr('_jsonxs' => sub { JSON::XS->new->convert_blessed(1) });
 __PACKAGE__->attr('error');
@@ -22,6 +46,19 @@ sub decode {
 
     # Cleanup
     $self->error(undef);
+
+    # Remove BOM
+    $string =~ s/^$BOM_RE//go;
+
+    # Detect and decode unicode
+    my $encoding = 'UTF-8';
+    for my $pattern (keys %$UTF_PATTERNS) {
+        if ($string =~ /^$pattern/) {
+            $encoding = $UTF_PATTERNS->{$pattern};
+            last;
+        }
+    }
+    $string = b($string)->decode($encoding)->to_string;
 
     my $result;
 
@@ -38,7 +75,10 @@ sub decode {
 sub encode {
     my ($self, $ref) = @_;
 
-    return $self->_jsonxs->encode($ref);
+    my $string = $self->_jsonxs->encode($ref);
+
+    # Unicode
+    return b($string)->encode('UTF-8')->to_string;
 }
 
 sub false {$FALSE}
