@@ -120,3 +120,36 @@ sub new { shift->SUPER::new(_value => shift) }
 sub TO_JSON { $_[0]->{_value} ? JSON::XS::true : JSON::XS::false }
 
 1;
+__END__
+
+=head1 NAME
+
+Mojo::JSON::XS - JSON::XS backend for Mojo::JSON::Any
+
+=head1 SYNOPSIS
+
+    use Mojo::JSON::XS;
+
+    my $json   = Mojo::JSON::XS->new;
+    my $string = $json->encode({foo => [1, 2], bar => 'hello!'});
+    my $hash   = $json->decode('{"foo": [3, -2, 1]}');
+
+=head1 DESCRIPTION
+
+L<Mojo::JSON::XS> is a wrapper over L<JSON::XS> with a compatible L<Mojo::JSON>
+interface.
+
+=head1 ATTRIBUTES
+
+See L<Mojo::JSON>.
+
+=head1 METHODS
+
+See L<Mojo::JSON>.
+
+=head1 ISSUES
+
+When error occurs error message for obvious reasons is not identical to
+L<Mojo::JSON>.
+
+=cut
