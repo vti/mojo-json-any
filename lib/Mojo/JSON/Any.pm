@@ -3,7 +3,7 @@ package Mojo::JSON::Any;
 use strict;
 use warnings;
 
-our $VERSION = '0.990101';
+our $VERSION = '0.990102';
 
 use Mojo::JSON;
 

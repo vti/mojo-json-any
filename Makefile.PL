@@ -32,6 +32,6 @@ WriteMakefile(
         )
     ),
 
-    PREREQ_PM => {},
-    test      => {TESTS => 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t'}
+    PREREQ_PM => {'Mojo' => ''},
+    test      => {TESTS  => 't/*.t t/*/*.t t/*/*/*.t t/*/*/*/*.t'}
 );
