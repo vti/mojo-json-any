@@ -9,7 +9,7 @@ use Test::More;
 
 plan skip_all => 'JSON::XS is required for this test'
   unless eval { require JSON::XS; 1 };
-plan tests => 82;
+plan tests => 86;
 
 use Mojo::ByteStream 'b';
 
