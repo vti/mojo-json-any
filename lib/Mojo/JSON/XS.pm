@@ -9,8 +9,8 @@ use JSON::XS;
 use Mojo::ByteStream 'b';
 
 # Literal names
-our $FALSE = Mojo::JSON::XS::_Bool->new(0);
-our $TRUE  = Mojo::JSON::XS::_Bool->new(1);
+our $FALSE = JSON::XS::false;
+our $TRUE  = JSON::XS::true;
 
 # Byte order marks
 my $BOM_RE = qr/
@@ -102,22 +102,6 @@ sub _exception {
     # Error
     $self->error(qq/$error near $context./) and return;
 }
-
-# Emulate boolean type
-package Mojo::JSON::XS::_Bool;
-
-use strict;
-use warnings;
-
-use base 'Mojo::Base';
-use overload (
-    '0+' => sub { $_[0]->{_value} },
-    '""' => sub { $_[0]->{_value} }, fallback => 1
-);
-
-sub new { shift->SUPER::new(_value => shift) }
-
-sub TO_JSON { $_[0]->{_value} ? JSON::XS::true : JSON::XS::false }
 
 1;
 __END__
