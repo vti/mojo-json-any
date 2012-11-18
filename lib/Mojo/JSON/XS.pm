@@ -76,6 +76,8 @@ sub encode {
     my ($self, $ref) = @_;
 
     my $string = $self->_jsonxs->encode($ref);
+    $string =~ s!\x{2028}!\\u2028!gs;
+    $string =~ s!\x{2029}!\\u2029!gs;
 
     # Unicode
     return b($string)->encode('UTF-8')->to_string;
