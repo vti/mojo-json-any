@@ -56,9 +56,20 @@ L<MOJO::JSON>, L<JSON::XS>.
 
     http://github.com/vti/mojo-json-any
 
+=head1 BUGS AND LIMITATIONS
+
+In the following cases behavior of L<Mojo::JSON::Any> differs depending on used
+backend module.
+
+L<JSON::XS> doesn't support blessed references without TO_JSON method, so
+L<Mojo::JSON::Any> doesn't support them too if L<JSON::XS> is used.
+
+L<Mojo::JSON::Any> doesn't process error messages from backend modules, this is
+why they differs depending on used backend module.
+
 =head1 AUTHOR
 
-Viacheslav Tykhanovskyi, C<vti@cpan.org>.
+Viacheslav Tykhanovskyi, C<vti@cpan.org>. Yuriy Syrota C<ysyrota@cpan.org>.
 
 =head1 COPYRIGHT AND LICENSE
 
