@@ -13,7 +13,7 @@ WriteMakefile(
     NAME         => 'Mojo::JSON::Any',
     VERSION_FROM => 'lib/Mojo/JSON/Any.pm',
     ABSTRACT     => "Use JSON::XS when it's available",
-    AUTHOR       => 'Viacheslav Tykhanovskyi <vti@cpan.org>',
+    AUTHOR       => 'Yuriy Syrota <ysyrota@cpan.org>',
 
     ($mm < 6.3002 ? () : ('LICENSE' => 'artistic_2')),
 
