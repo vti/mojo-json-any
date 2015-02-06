@@ -18,7 +18,7 @@ __END__
 
 =head1 NAME
 
-Mojo::JSON::Any - Use JSON::XS when it's available
+Mojo::JSON::Any - Use JSON::XS when it's available (DEPRECATED)
 
 =head1 SYNOPSIS
 
@@ -29,6 +29,8 @@ Mojo::JSON::Any - Use JSON::XS when it's available
     my $hash   = $json->decode('{"foo": [3, -2, 1]}');
 
 =head1 DESCRIPTION
+
+This modules is DEPRECATED. See L<MojoX::JSON::XS>
 
 L<Mojo::JSON::Any> is a wrapper over L<Mojo::JSON> and L<JSON::XS>. When the last
 is available it is used.
@@ -48,7 +50,7 @@ See L<Mojo::JSON>.
 
 =head1 SEE ALSO
 
-L<MOJO::JSON>, L<JSON::XS>.
+L<Mojo::JSON>, L<JSON::XS>.
 
 =head1 DEVELOPMENT
 

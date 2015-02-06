@@ -12,7 +12,7 @@ my $mm = $ExtUtils::MakeMaker::VERSION;
 WriteMakefile(
     NAME         => 'Mojo::JSON::Any',
     VERSION_FROM => 'lib/Mojo/JSON/Any.pm',
-    ABSTRACT     => "Use JSON::XS when it's available",
+    ABSTRACT     => "Use JSON::XS when it's available (DEPRECATED)",
     AUTHOR       => 'Yuriy Syrota <ysyrota@cpan.org>',
 
     ($mm < 6.3002 ? () : ('LICENSE' => 'artistic_2')),
@@ -20,6 +20,7 @@ WriteMakefile(
     (   $mm < 6.46
         ? ()
         : ( META_MERGE => {
+                x_deprecated => 1,
                 requires => {perl => '5.008001'},
                 resources =>
                   {repository => 'http://github.com/vti/mojo-json-any'},
